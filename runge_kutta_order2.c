@@ -1,44 +1,36 @@
 #include <stdio.h>
+#include <math.h>
 
-double f(double xv, double yv)
+double f(double x, double y)
 {
-    return (xv * yv);
+    return ((0.5 - x + (double)pow(y, 2)) / ((double)pow(x, 2) + y + 1));
+}
+
+double rungeKuttaOrder2(double h, double x0, double y0, double xn)
+{
+    int n = (xn - x0) / h;
+    double x[n + 1], y[n + 1];
+    x[0] = x0;
+    y[0] = y0;
+    double ty;
+    ty = y0 + f(x0, y0);
+    for (int i = 0; i < n; i++)
+    {
+        x[i + 1] = x[i] + h;
+    }
+
+    for (int i = 0; i < n + 1; i++)
+    {
+        ty = y[i] + h * f(x[i], y[i]);
+        y[i + 1] = y[i] + (h / 2.0) * (f(x[i], y[i]) + f(x[i + 1], ty));
+    }
+    return y[n + 1];
 }
 
 int main()
 {
-    double x0, y0;
-    printf("Enter value of x0 and y0 = ");
-    scanf("%lf%lf", &x0, &y0);
-    double h;
-    printf("Enter value of h = ");
-    scanf("%lf", &h);
-    double k1, k2, k3, k4, k;
-    int n;
-    printf("Enter number of sub-intervals = ");
-    scanf("%d", &n);
-    double x[n + 1], y[n + 1];
-    double xi = 0;
-    y[0] = y0;
-    for (int i = 0; i < n + 1; i++)
-    {
-        x[i] = xi;
-        xi += h;
-    }
-    int i = 0;
-    double xn;
-    printf("Enter value of x = ");
-    scanf("%lf", &xn);
-    do
-    {
-        k1 = h * f(x[i], y[i]);
-        k2 = h * f((x[i] + (h / 2)), (y[i] + (k1 / 2)));
-        k3 = h * f((x[i] + (h / 2)), (y[i] + (k2 / 2)));
-        k4 = h * f((x[i] + h), (y[i] + k3));
-        k = (k1 + 2 * k2 + 2 * k3 + k4) * ((double)1 / (double)6);
-        y[i + 1] = y[i] + k;
-        i++;
-    } while (x[i] != xn);
-    printf("y = %lf when x = %lf", y[i], x[i]);
+    double y = rungeKuttaOrder2(0.1, 0, 0, 0.6);
+    printf("\nO.D.E: dy/dx = (0.5 - x + y^2) / (x^2 + y + 1)");
+    printf("\nvalue of y when x = %lf is %lf", 0.6, y);
     return 0;
 }
